@@ -6,5 +6,6 @@ export default {
   GREEN: '#A8DF74',
   SECONDARY: '#D62F43',
   BLUE:'#B5E5FF',
-  PURPLE:'#D4B5FF'
+  PURPLE:'#D4B5FF',
+  BLACK:"#000"
 }

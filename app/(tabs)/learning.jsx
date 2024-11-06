@@ -1,23 +1,38 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../../constants/Colors';
 import { useRouter } from 'expo-router';
-
-const courses = [
-    { id: '1', title: 'Giới thiệu về Tài chính cá nhân' },
-    { id: '2', title: 'Lập kế hoạch tài chính cá nhân' },
-    { id: '3', title: 'Quản lý thu nhập và chi tiêu' },
-    { id: '4', title: 'Tiết kiệm và Quỹ dự phòng' },
-    { id: '5', title: 'Quản lý nợ và sử dụng tín dụng' },
-];
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../../config/FirebaseConfig'; // Ensure your Firebase config is correctly imported
 
 export default function CourseLearning() {
+    const [courses, setCourses] = useState([]); // State to hold the courses
     const router = useRouter();
 
+    // Fetch courses from Firestore
+    useEffect(() => {
+        const fetchCourses = async () => {
+            try {
+                const coursesCollection = collection(db, 'Course'); // Reference to the Course collection
+                const coursesSnapshot = await getDocs(coursesCollection);
+                const coursesList = coursesSnapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data(), // Spread operator to get the course data
+                }));
+
+                setCourses(coursesList); // Update the state with the fetched courses
+            } catch (error) {
+                console.error("Error fetching courses: ", error);
+            }
+        };
+
+        fetchCourses();
+    }, []);
+
     const handleCoursePress = (courseId) => {
-        router.push(`/course/${courseId}`);
+        router.push(`/course-detail?id=${courseId}`); // Assuming you want to navigate to a detailed view with the course ID
     };
 
     const renderCourseItem = ({ item }) => (
@@ -35,14 +50,6 @@ export default function CourseLearning() {
             {/* Header */}
             <LinearGradient colors={['#ff5f6d', '#d21f3c']} style={styles.header}>
                 <Text style={styles.headerText}>Bài học</Text>
-                <Image
-                    source={{ uri: 'https://example.com/piggy-icon.png' }} // Replace with the actual URL or local asset for the piggy icon
-                    style={styles.piggyIcon}
-                />
-                <Image
-                    source={{ uri: 'https://example.com/abc-icon.png' }} // Replace with the actual URL or local asset for the ABC icon
-                    style={styles.abcIcon}
-                />
             </LinearGradient>
 
             {/* Course List */}
@@ -62,32 +69,16 @@ const styles = StyleSheet.create({
         backgroundColor: '#fceeee',
     },
     header: {
-        padding: 20,
-        paddingBottom: 40,
+        paddingTop: 80,
+        paddingBottom: 60,
         borderBottomLeftRadius: 20,
         borderBottomRightRadius: 20,
         alignItems: 'center',
-        justifyContent: 'center',
-        position: 'relative',
     },
     headerText: {
         color: '#fff',
-        fontSize: 20,
+        fontSize: 30,
         fontWeight: 'bold',
-    },
-    piggyIcon: {
-        width: 50,
-        height: 50,
-        position: 'absolute',
-        top: 20,
-        right: 40,
-    },
-    abcIcon: {
-        width: 50,
-        height: 50,
-        position: 'absolute',
-        top: 20,
-        left: 40,
     },
     courseList: {
         paddingHorizontal: 20,

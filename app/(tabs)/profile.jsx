@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, FlatList, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../../constants/Colors';
@@ -11,40 +11,58 @@ export default function Profile() {
     const auth = getAuth();
     const user = auth.currentUser;
 
-    // Sample usage data for the week (Replace with actual data if available)
-    const usageData = [
-        { day: 'T2', value: 3 },
-        { day: 'T3', value: 4 },
-        { day: 'T4', value: 2 },
-        { day: 'T5', value: 5 },
-        { day: 'T6', value: 3 },
-        { day: 'T7', value: 4 },
-        { day: 'CN', value: 6 },
-    ];
+
+    const confirmLogout = () => {
+        Alert.alert(
+            "Xác nhận đăng xuất",
+            "Bạn chắc chắn muốn đăng xuất?",
+            [
+                {
+                    text: "Không",
+                    style: "cancel"
+                },
+                {
+                    text: "Có",
+                    onPress: handleLogout
+                }
+            ],
+            { cancelable: true }
+        );
+    };
 
     const handleLogout = () => {
         signOut(auth)
             .then(() => {
-                router.replace('/login');
+                router.replace('/auth/signin');
             })
             .catch(error => {
                 Alert.alert("Error", error.message);
             });
     };
 
-    const handleProfileDetail = () => {
-        router.push('/profile/detail'); // Navigate to the profile detail page
-    };
-
-    const handleChangePassword = () => {
-        router.push('/profile/change-password'); // Navigate to change password page
-    };
+    const settingsOptions = [
+        { id: 'profileDetail', icon: 'person-outline', label: 'Thông tin cá nhân', action: () => router.push('/profile-detail') },
+        { id: 'changePassword', icon: 'lock-closed-outline', label: 'Mật khẩu', action: () => router.push('/change-password') },
+        { id: 'game', icon: 'game-controller-outline', label: 'Trò chơi' },
+        { id: 'language', icon: 'language-outline', label: 'Ngôn ngữ' },
+        { id: 'currency', icon: 'cash-outline', label: 'Đơn vị tiền tệ' },
+        { id: 'feedback', icon: 'help-outline', label: 'Báo lỗi hoặc phản hồi' },
+        { id: 'rate', icon: 'star-outline', label: 'Đánh giá' },
+        { id: 'logout', icon: 'log-out-outline', label: 'Đăng xuất', action: confirmLogout },
+    ];
 
     const renderUsageBar = ({ item }) => (
         <View style={styles.usageBarContainer}>
             <View style={[styles.usageBar, { height: item.value * 10 }]} />
             <Text style={styles.usageBarLabel}>{item.day}</Text>
         </View>
+    );
+
+    const renderSettingItem = ({ item }) => (
+        <TouchableOpacity style={styles.settingsItem} onPress={item.action}>
+            <Ionicons name={item.icon} size={24} color={Colors.SECONDARY} />
+            <Text style={styles.settingsText}>{item.label}</Text>
+        </TouchableOpacity>
     );
 
     return (
@@ -56,64 +74,33 @@ export default function Profile() {
 
             {/* Profile Info */}
             <View style={styles.profileInfoContainer}>
-                <Image
-                    source={user?.photoURL ? { uri: user.photoURL } : require('../../assets/avatar-placeholder.png')} // Replace with local placeholder if user.photoURL is unavailable
-                    style={styles.avatar}
-                />
+                {/* Profile Information */}
                 <Text style={styles.profileName}>{user?.displayName || "Name"}</Text>
                 <Text style={styles.profileEmail}>{user?.email || "example@gmail.com"}</Text>
 
                 {/* Usage Graph */}
-                <FlatList
-                    data={usageData}
-                    renderItem={renderUsageBar}
-                    keyExtractor={(item) => item.day}
-                    horizontal
-                    style={styles.usageGraph}
-                />
+                {/* <FlatList
+                            data={usageData}
+                            renderItem={renderUsageBar}
+                            keyExtractor={(item) => item.day}
+                            horizontal
+                            style={styles.usageGraph}
+                            showsHorizontalScrollIndicator={false}
+                        /> */}
 
                 {/* Usage Message */}
-                <View style={styles.usageMessageContainer}>
-                    <Text style={styles.usageMessageText}>Hôm nay, bạn sử dụng hết...</Text>
-                </View>
+                {/* <View style={styles.usageMessageContainer}>
+                            <Text style={styles.usageMessageText}>Hôm nay, bạn sử dụng hết...</Text>
+                        </View> */}
             </View>
-
-            {/* Settings List */}
-            <View style={styles.settingsList}>
-                <TouchableOpacity style={styles.settingsItem} onPress={handleProfileDetail}>
-                    <Ionicons name="person-outline" size={24} color={Colors.SECONDARY} />
-                    <Text style={styles.settingsText}>Thông tin cá nhân</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.settingsItem} onPress={handleChangePassword}>
-                    <Ionicons name="lock-closed-outline" size={24} color={Colors.SECONDARY} />
-                    <Text style={styles.settingsText}>Mật khẩu</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.settingsItem}>
-                    <Ionicons name="game-controller-outline" size={24} color={Colors.SECONDARY} />
-                    <Text style={styles.settingsText}>Trò chơi</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.settingsItem}>
-                    <Ionicons name="language-outline" size={24} color={Colors.SECONDARY} />
-                    <Text style={styles.settingsText}>Ngôn ngữ</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.settingsItem}>
-                    <Ionicons name="cash-outline" size={24} color={Colors.SECONDARY} />
-                    <Text style={styles.settingsText}>Đơn vị tiền tệ</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.settingsItem}>
-                    <Ionicons name="help-outline" size={24} color={Colors.SECONDARY} />
-                    <Text style={styles.settingsText}>Báo lỗi hoặc phản hồi</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.settingsItem}>
-                    <Ionicons name="star-outline" size={24} color={Colors.SECONDARY} />
-                    <Text style={styles.settingsText}>Đánh giá</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.settingsItem} onPress={handleLogout}>
-                    <Ionicons name="log-out-outline" size={24} color={Colors.SECONDARY} />
-                    <Text style={styles.settingsText}>Đăng xuất</Text>
-                </TouchableOpacity>
-            </View>
+            <FlatList
+                data={settingsOptions}
+                renderItem={renderSettingItem}
+                keyExtractor={(item) => item.id}
+                style={styles.settingsList}
+            />
         </View>
+
     );
 }
 
@@ -123,15 +110,15 @@ const styles = StyleSheet.create({
         backgroundColor: '#fceeee',
     },
     header: {
-        padding: 20,
-        paddingBottom: 40,
+        paddingTop: 80,
+        paddingBottom: 60,
         borderBottomLeftRadius: 20,
         borderBottomRightRadius: 20,
         alignItems: 'center',
     },
     headerText: {
         color: '#fff',
-        fontSize: 20,
+        fontSize: 30,
         fontWeight: 'bold',
     },
     profileInfoContainer: {
@@ -184,7 +171,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     settingsList: {
-        marginTop: 20,
+        marginTop: 10,
         paddingHorizontal: 20,
     },
     settingsItem: {
@@ -198,5 +185,8 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#333',
         marginLeft: 15,
+    },
+    footerSpacing: {
+        height: 100, // Adds space at the bottom so that the last item is above the tab layout
     },
 });

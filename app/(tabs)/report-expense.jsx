@@ -1,12 +1,11 @@
 import React from 'react';
-import { View, Text, StyleSheet, FlatList, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Dimensions } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { PieChart } from 'react-native-chart-kit';
-import { Dimensions } from 'react-native';
 
 const screenWidth = Dimensions.get('window').width;
 
-const ReportExpense = () => {
+export default function ReportExpense() {
     const expenses = [
         { id: '1', category: 'Ăn uống', amount: '1,000,000 đ', date: '01 Thg 11, 2024', icon: 'cutlery' },
         { id: '2', category: 'Đi chơi', amount: '800,000 đ', date: '01 Thg 11, 2024', icon: 'smile-o' },
@@ -23,68 +22,69 @@ const ReportExpense = () => {
     ];
 
     return (
-        <ScrollView style={styles.container}>
-            {/* Header */}
-            <View style={styles.header}>
-                <Text style={styles.headerTitle}>Tháng 11, 2024</Text>
-                <View style={styles.calendar}>
-                    {['CN', 'Th 2', 'Th 3', 'Th 4', 'Th 5', 'Th 6', 'Th 7'].map((day, index) => (
-                        <TouchableOpacity key={index} style={index === 2 ? styles.selectedDay : styles.calendarDay}>
-                            <Text style={index === 2 ? styles.selectedDayText : styles.calendarText}>{day}</Text>
-                        </TouchableOpacity>
-                    ))}
-                </View>
-            </View>
-
-            {/* Expense List */}
-            <FlatList
-                data={expenses}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item }) => (
-                    <View style={styles.expenseItem}>
-                        <FontAwesome name={item.icon} size={24} color="black" />
-                        <View style={styles.expenseDetails}>
-                            <Text style={styles.expenseCategory}>{item.category}</Text>
-                            <Text style={styles.expenseDate}>{item.date}</Text>
+        <FlatList
+            data={expenses}
+            style={styles.container}
+            keyExtractor={(item) => item.id}
+            ListHeaderComponent={
+                <View>
+                    {/* Header */}
+                    <View style={styles.header}>
+                        <Text style={styles.headerTitle}>Tháng 11, 2024</Text>
+                        <View style={styles.calendar}>
+                            {['CN', 'Th 2', 'Th 3', 'Th 4', 'Th 5', 'Th 6', 'Th 7'].map((day, index) => (
+                                <TouchableOpacity key={index} style={index === 2 ? styles.selectedDay : styles.calendarDay}>
+                                    <Text style={index === 2 ? styles.selectedDayText : styles.calendarText}>{day}</Text>
+                                </TouchableOpacity>
+                            ))}
                         </View>
-                        <Text style={styles.expenseAmount}>{item.amount}</Text>
                     </View>
-                )}
-            />
 
-            {/* Chart Section */}
-            <Text style={styles.chartTitle}>Xếp hạng chi tiêu tháng 10</Text>
-            <PieChart
-                data={chartData}
-                width={screenWidth - 40}
-                height={200}
-                chartConfig={{
-                    backgroundColor: '#F5F5F5',
-                    backgroundGradientFrom: '#F5F5F5',
-                    backgroundGradientTo: '#F5F5F5',
-                    color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                }}
-                accessor={'population'}
-                backgroundColor={'transparent'}
-                paddingLeft={'15'}
-                absolute
-                style={styles.chart}
-            />
+                    {/* Chart Section */}
+                    <Text style={styles.chartTitle}>Xếp hạng chi tiêu tháng 10</Text>
+                    <PieChart
+                        data={chartData}
+                        width={screenWidth - 40}
+                        height={200}
+                        chartConfig={{
+                            backgroundColor: '#F5F5F5',
+                            backgroundGradientFrom: '#F5F5F5',
+                            backgroundGradientTo: '#F5F5F5',
+                            color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                            labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                        }}
+                        accessor={'population'}
+                        backgroundColor={'transparent'}
+                        paddingLeft={'15'}
+                        absolute
+                        style={styles.chart}
+                    />
 
-            {/* Legend Section */}
-            <View style={styles.legend}>
-                {chartData.map((item, index) => (
-                    <View key={index} style={styles.legendItem}>
-                        <View style={[styles.legendColor, { backgroundColor: item.color }]} />
-                        <Text style={styles.legendText}>{item.name}</Text>
-                        <Text style={styles.legendPercentage}>{item.population}%</Text>
+                    {/* Legend Section */}
+                    <View style={styles.legend}>
+                        {chartData.map((item, index) => (
+                            <View key={index} style={styles.legendItem}>
+                                <View style={[styles.legendColor, { backgroundColor: item.color }]} />
+                                <Text style={styles.legendText}>{item.name}</Text>
+                                <Text style={styles.legendPercentage}>{item.population}%</Text>
+                            </View>
+                        ))}
                     </View>
-                ))}
-            </View>
-        </ScrollView>
+                </View>
+            }
+            renderItem={({ item }) => (
+                <View style={styles.expenseItem}>
+                    <FontAwesome name={item.icon} size={24} color="black" />
+                    <View style={styles.expenseDetails}>
+                        <Text style={styles.expenseCategory}>{item.category}</Text>
+                        <Text style={styles.expenseDate}>{item.date}</Text>
+                    </View>
+                    <Text style={styles.expenseAmount}>{item.amount}</Text>
+                </View>
+            )}
+        />
     );
-};
+}
 
 const styles = StyleSheet.create({
     container: {
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
     },
     header: {
-        marginTop: 20,
+        marginTop: 40,
         marginBottom: 10,
         alignItems: 'center',
     },
@@ -185,5 +185,3 @@ const styles = StyleSheet.create({
         color: '#333',
     },
 });
-
-export default ReportExpense;

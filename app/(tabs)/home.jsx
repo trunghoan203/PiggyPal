@@ -11,14 +11,16 @@ import { db } from '../../config/FirebaseConfig';
 
 export default function HomePage() {
   const [user, setUser] = useState(null);
+  const [incomeTotal, setIncomeTotal] = useState(0);
+  const [expenseTotal, setExpenseTotal] = useState(0);
 
   const router = useRouter();
 
   // Sample data for transactions
   const transactions = [
-    { id: '1', icon: 'cash-outline', category: 'Nợ', date: '01 Thg 11, 2024', amount: '500.000 đ', color: Colors.YELLOW },
-    { id: '2', icon: 'cart-outline', category: 'Mua sắm', date: '01 Thg 11, 2024', amount: '1.000.000 đ', color: Colors.GREEN },
-    { id: '3', icon: 'home-outline', category: 'Nhà', date: '01 Thg 11, 2024', amount: '2.500.000 đ', color: Colors.SECONDARY },
+    { id: '1', icon: 'cash-outline', category: 'Nợ', date: '01 Thg 11, 2024', amount: '500.000 đ' },
+    { id: '2', icon: 'cart-outline', category: 'Mua sắm', date: '01 Thg 11, 2024', amount: '1.000.000 đ' },
+    { id: '3', icon: 'home-outline', category: 'Nhà', date: '01 Thg 11, 2024', amount: '2.500.000 đ' },
   ];
 
   useEffect(() => {
@@ -62,10 +64,10 @@ export default function HomePage() {
             <Text style={styles.userName}>{user?.displayName || "Name"}</Text>
           </View>
         </View>
-        <Image
+        {/* <Image
           source={{ uri: './../../assets/images/Logo.png' }}
           style={styles.emoji}
-        />
+        /> */}
       </LinearGradient>
 
       {/* Income and Expense Cards */}
